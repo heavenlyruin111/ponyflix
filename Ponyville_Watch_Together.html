@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponyville Watch Together 🎬✨</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            pink: '#F8C8DC',
+                            lavender: '#E6E6FA',
+                            mint: '#D8F3DC',
+                            burgundy: '#800020',
+                            burgundyLight: '#A52A42',
+                            darkBg: '#121214',
+                            darkCard: '#1A1A1E',
+                            darkHover: '#26262B'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter & Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Quicksand', sans-serif; }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0px) scale(0.6); opacity: 1; }
+            100% { transform: translateY(-380px) scale(1.4) rotate(15deg); opacity: 0; }
+        }
+        .floating-emoji {
+            position: absolute;
+            bottom: 20px;
+            animation: floatUp 2.2s ease-out forwards;
+            pointer-events: none;
+            font-size: 2.2rem;
+            z-index: 50;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(248, 200, 220, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(248, 200, 220, 0.5); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-pastel-darkBg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-pastel-darkCard/80 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            
+            <!-- Branding -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pastel-pink to-pastel-burgundy flex items-center justify-center text-white shadow-md shadow-pink-500/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="font-heading font-bold text-lg tracking-wide flex items-center gap-2">
+                        Ponyville Watch Party 
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-pastel-pink/20 dark:bg-pastel-burgundy/40 text-pastel-burgundy dark:text-pastel-pink border border-pastel-burgundy/20 font-sans font-medium">Auto-Sync Room</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Cozy community watch-together chamber</p>
+                </div>
+            </div>
+
+            <!-- Controls & Profile Quick Switch -->
+            <div class="flex items-center flex-wrap gap-2 sm:gap-3">
+                
+                <!-- Host Sync Button -->
+                <button id="syncHostBtn" onclick="toggleSyncHost()" class="px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-800 transition hover:scale-105 shadow-sm">
+                    <span id="syncStatusIndicator" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span id="syncBtnText">Sync with Host: OFF</span>
+                </button>
+
+                <!-- Theme Accent Selector -->
+                <div class="relative">
+                    <select id="themeAccentSelect" onchange="changeThemeAccent(this.value)" class="text-xs bg-slate-100 dark:bg-pastel-darkHover border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-pastel-pink cursor-pointer">
+                        <option value="pink">🎀 Baby Pink</option>
+                        <option value="lavender">💜 Lavender Dreams</option>
+                        <option value="mint">🌿 Mint Pastel</option>
+                        <option value="burgundy">🍷 Burgundy Noir</option>
+                    </select>
+                </div>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:bg-slate-200 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300" title="Toggle Light/Dark Mode">
+                    <svg id="themeIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                </button>
+
+                <!-- Profile Customizer Modal Trigger -->
+                <button onclick="openProfileModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:bg-slate-200 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700">
+                    <img id="headerUserAvatar" src="https://placehold.co/100x100/800020/FFFFFF?text=P" alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-pastel-burgundy">
+                    <span id="headerUserName" class="text-xs font-semibold max-w-[100px] truncate">Fluttershy</span>
+                </button>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+        
+        <!-- Left 3 Columns: Video Player & Controls -->
+        <div class="lg:col-span-3 flex flex-col gap-4">
+            
+            <!-- URL Loader Bar with Auto-Embed -->
+            <div class="bg-white dark:bg-pastel-darkCard p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-3 items-center">
+                <div class="relative flex-1 w-full">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    </span>
+                    <input type="text" id="videoUrlInput" placeholder="Paste YouTube link (auto-embeds instantly) or Direct MP4 / Google Video link..." class="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-pastel-darkHover border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-pastel-burgundy transition" oninput="autoDetectAndEmbed(this.value)">
+                </div>
+                <button onclick="loadMedia()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-pastel-burgundy hover:bg-pastel-burgundyLight text-white shadow-md transition transform active:scale-95 flex items-center justify-center gap-2">
+                    <span>Load Media</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+
+            <!-- Video Player Display Box with Floating Reaction Layer -->
+            <div id="playerContainer" class="relative w-full aspect-video bg-black rounded-2xl shadow-xl overflow-hidden border border-slate-800 flex items-center justify-center group">
+                
+                <!-- Floating Emojis Container -->
+                <div id="floatingEmojiContainer" class="absolute inset-0 overflow-hidden pointer-events-none z-30"></div>
+
+                <!-- Placeholder when no video loaded -->
+                <div id="videoPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-900/90 text-center p-6">
+                    <div class="w-16 h-16 rounded-3xl bg-pastel-burgundy/20 border border-pastel-burgundy/40 flex items-center justify-center text-pastel-pink mb-3 shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="font-heading font-bold text-base text-slate-200 mb-1">No Video Loaded Yet</h3>
+                    <p class="text-xs text-slate-400 max-w-xs">Paste any YouTube link above and it will auto-embed instantly for everyone in the room!</p>
+                </div>
+
+                <!-- YouTube Iframe Wrapper -->
+                <div id="youtubeWrapper" class="absolute inset-0 hidden">
+                    <iframe id="youtubeIframe" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <!-- Direct Video Element (MP4 / WebM / Google Video Stream) -->
+                <video id="directVideoPlayer" class="absolute inset-0 w-full h-full object-contain hidden" controls></video>
+
+            </div>
+
+            <!-- Emoji Reaction Toolbar -->
+            <div class="bg-white dark:bg-pastel-darkCard p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 pl-2">Live Reactions:</span>
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <button onclick="sendReaction('🍿')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:scale-110 active:scale-95 transition text-lg shadow-sm" title="Popcorn">🍿</button>
+                    <button onclick="sendReaction('💖')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:scale-110 active:scale-95 transition text-lg shadow-sm" title="Heart">💖</button>
+                    <button onclick="sendReaction('😂')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:scale-110 active:scale-95 transition text-lg shadow-sm" title="Laugh">😂</button>
+                    <button onclick="sendReaction('😱')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:scale-110 active:scale-95 transition text-lg shadow-sm" title="Shock">😱</button>
+                    <button onclick="sendReaction('✨')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:scale-110 active:scale-95 transition text-lg shadow-sm" title="Sparkle">✨</button>
+                    <button onclick="sendReaction('🎉')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:scale-110 active:scale-95 transition text-lg shadow-sm" title="Party">🎉</button>
+                    <button onclick="sendReaction('🦄')" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-pastel-darkHover hover:scale-110 active:scale-95 transition text-lg shadow-sm" title="Unicorn">🦄</button>
+                </div>
+            </div>
+
+            <!-- Now Playing Details -->
+            <div class="bg-white dark:bg-pastel-darkCard p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-pastel-burgundy dark:text-pastel-pink">Current Feature</span>
+                    <h2 id="currentMediaTitle" class="font-heading font-bold text-sm sm:text-base text-slate-800 dark:text-slate-100 truncate max-w-md">Waiting for host selection...</h2>
+                </div>
+                <div class="text-right">
+                    <span id="activeViewersCount" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">🟢 4 Watchers Online</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right 1 Column: Real-Time Chat & Room Members -->
+        <div class="lg:col-span-1 bg-white dark:bg-pastel-darkCard rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-[600px] lg:h-[calc(100vh-140px)] sticky top-20">
+            
+            <!-- Chat Header -->
+            <div class="p-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <h3 class="font-heading font-bold text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4 text-pastel-burgundy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    Live Room Chat
+                </h3>
+                <span id="onlineCountBadge" class="text-[11px] font-medium text-slate-400">4 active</span>
+            </div>
+
+            <!-- Messages Container -->
+            <div id="chatMessages" class="flex-1 p-3.5 overflow-y-auto space-y-3 flex flex-col text-xs">
+                <div class="text-center my-1">
+                    <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-pastel-darkHover text-slate-400 text-[10px]">✨ Welcome to Ponyville Watch Party!</span>
+                </div>
+            </div>
+
+            <!-- Chat Input Box -->
+            <div class="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-pastel-darkCard/50 rounded-b-2xl">
+                <form id="chatForm" onsubmit="handleChatSubmit(event)" class="flex gap-2">
+                    <input type="text" id="chatInput" placeholder="Send a cozy message..." autocomplete="off" class="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-pastel-darkHover border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-pastel-burgundy transition">
+                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-pastel-burgundy hover:bg-pastel-burgundyLight text-white font-semibold transition flex items-center justify-center shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Profile Customization Modal -->
+    <div id="profileModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-pastel-darkCard rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 transform transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-heading font-bold text-lg">Customize Your Profile</h3>
+                <button onclick="closeProfileModal()" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-pastel-darkHover text-slate-400 hover:text-slate-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <form onsubmit="saveProfile(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Display Name</label>
+                    <input type="text" id="modalDisplayName" required class="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-pastel-darkHover border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-pastel-burgundy">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Avatar Image URL</label>
+                    <input type="url" id="modalAvatarUrl" required class="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-pastel-darkHover border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-pastel-burgundy" placeholder="https://...">
+                    <p class="text-[10px] text-slate-400 mt-1">Provide a direct image URL for your avatar.</p>
+                </div>
+
+                <div class="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Discord Verified Tag:</span>
+                        <span id="modalDiscordTag" class="text-xs font-mono px-2 py-0.5 rounded bg-pastel-burgundy/10 text-pastel-burgundy dark:text-pastel-pink font-semibold">@fluttershy#0707</span>
+                    </div>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-pastel-burgundy hover:bg-pastel-burgundyLight text-white shadow-md transition">
+                        Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let currentUser = {
+            name: "Fluttershy",
+            tag: "@fluttershy#0707",
+            avatar: "https://placehold.co/100x100/F8C8DC/800020?text=FS"
+        };
+
+        let isSyncHostActive = false;
+        let hostTimestamp = 0;
+        let currentMediaType = null;
+        let broadcastChannel = new BroadcastChannel('ponyville_watch_room');
+
+        window.onload = function() {
+            const savedUser = localStorage.getItem('ponyville_user');
+            if (savedUser) {
+                try { currentUser = JSON.parse(savedUser); } catch(e){}
+            }
+            updateUserProfileUI();
+
+            appendChatMessage("AppleJack", "Hey everyone! Ready for the movie night? 🍏", "https://placehold.co/100x100/FFA500/FFFFFF?text=AJ");
+            appendChatMessage("Twilight Sparkle", "Just loaded up the stream. Enjoy the watch party! ✨", "https://placehold.co/100x100/9370DB/FFFFFF?text=TS");
+
+            // Listen for cross-tab sync / real-time simulated messages
+            broadcastChannel.onmessage = (event) => {
+                const data = event.data;
+                if (data.type === 'CHAT') {
+                    appendChatMessage(data.sender, data.text, data.avatar, data.isReaction);
+                } else if (data.type === 'MEDIA') {
+                    executeLoadMedia(data.url, false);
+                } else if (data.type === 'REACTION') {
+                    triggerFloatingEmoji(data.emoji);
+                }
+            };
+
+            setInterval(simulateRandomChatter, 14000);
+        };
+
+        // Profile Modal Actions
+        function openProfileModal() {
+            document.getElementById('modalDisplayName').value = currentUser.name;
+            document.getElementById('modalAvatarUrl').value = currentUser.avatar;
+            document.getElementById('modalDiscordTag').innerText = currentUser.tag;
+            document.getElementById('profileModal').classList.remove('hidden');
+            document.getElementById('profileModal').classList.add('flex');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('flex');
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            currentUser.name = document.getElementById('modalDisplayName').value;
+            currentUser.avatar = document.getElementById('modalAvatarUrl').value;
+            localStorage.setItem('ponyville_user', JSON.stringify(currentUser));
+            updateUserProfileUI();
+            closeProfileModal();
+            appendSystemMessage(`✨ ${currentUser.name} updated their profile!`);
+        }
+
+        function updateUserProfileUI() {
+            document.getElementById('headerUserName').innerText = currentUser.name;
+            document.getElementById('headerUserAvatar').src = currentUser.avatar;
+        }
+
+        // Theme & Appearance Switcher
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function changeThemeAccent(accent) {
+            const accents = {
+                pink: '#F8C8DC',
+                lavender: '#E6E6FA',
+                mint: '#D8F3DC',
+                burgundy: '#800020'
+            };
+            if (accents[accent]) {
+                document.documentElement.style.setProperty('--accent', accents[accent]);
+            }
+        }
+
+        // Host Synchronization Toggle
+        function toggleSyncHost() {
+            isSyncHostActive = !isSyncHostActive;
+            const btnText = document.getElementById('syncBtnText');
+            const indicator = document.getElementById('syncStatusIndicator');
+            const btn = document.getElementById('syncHostBtn');
+
+            if (isSyncHostActive) {
+                btnText.innerText = "Sync with Host: ON";
+                indicator.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800 transition hover:scale-105 shadow-sm";
+                appendSystemMessage("🔗 Locked to Host timeline.");
+            } else {
+                btnText.innerText = "Sync with Host: OFF";
+                indicator.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+                btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-800 transition hover:scale-105 shadow-sm";
+                appendSystemMessage("🔓 Unlinked from Host timeline.");
+            }
+        }
+
+        // Auto-embed detector as user types or pastes
+        function autoDetectAndEmbed(url) {
+            const cleanUrl = url.trim();
+            if (cleanUrl.length > 10 && (cleanUrl.includes('youtube.com') || cleanUrl.includes('youtu.be'))) {
+                loadMedia();
+            }
+        }
+
+        function loadMedia() {
+            const urlInput = document.getElementById('videoUrlInput').value.trim();
+            if (!urlInput) return;
+            executeLoadMedia(urlInput, true);
+        }
+
+        function executeLoadMedia(urlInput, broadcast = true) {
+            const placeholder = document.getElementById('videoPlaceholder');
+            const ytWrapper = document.getElementById('youtubeWrapper');
+            const ytIframe = document.getElementById('youtubeIframe');
+            const directVideo = document.getElementById('directVideoPlayer');
+            const titleEl = document.getElementById('currentMediaTitle');
+
+            placeholder.classList.add('hidden');
+
+            const ytMatch = urlInput.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+
+            if (ytMatch && ytMatch[1]) {
+                currentMediaType = 'youtube';
+                directVideo.pause();
+                directVideo.classList.add('hidden');
+                
+                const videoId = ytMatch[1];
+                ytIframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+                ytWrapper.classList.remove('hidden');
+                titleEl.innerText = `YouTube Video (${videoId})`;
+                appendSystemMessage(`▶️ Media loaded: YouTube (${videoId})`);
+            } else {
+                currentMediaType = 'direct';
+                ytIframe.src = '';
+                ytWrapper.classList.add('hidden');
+
+                directVideo.src = urlInput;
+                directVideo.classList.remove('hidden');
+                directVideo.play().catch(err => console.log("Autoplay restriction:", err));
+                titleEl.innerText = `Direct Stream: ${urlInput.split('/').pop() || 'Video file'}`;
+                appendSystemMessage(`▶️ Media loaded: Direct Stream`);
+            }
+
+            if (broadcast) {
+                broadcastChannel.postMessage({ type: 'MEDIA', url: urlInput });
+            }
+        }
+
+        // Floating Emoji Reaction System
+        function sendReaction(emoji) {
+            triggerFloatingEmoji(emoji);
+            appendChatMessage(currentUser.name, `sent reaction ${emoji}`, currentUser.avatar, true);
+            broadcastChannel.postMessage({ type: 'REACTION', emoji });
+        }
+
+        function triggerFloatingEmoji(emoji) {
+            const container = document.getElementById('floatingEmojiContainer');
+            const el = document.createElement('div');
+            el.className = 'floating-emoji';
+            el.innerText = emoji;
+            
+            const randomX = Math.floor(Math.random() * 85) + 5;
+            el.style.left = `${randomX}%`;
+            
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 2200);
+        }
+
+        // Chat Handlers
+        function handleChatSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appendChatMessage(currentUser.name, text, currentUser.avatar);
+            broadcastChannel.postMessage({
+                type: 'CHAT',
+                sender: currentUser.name,
+                text: text,
+                avatar: currentUser.avatar,
+                isReaction: false
+            });
+            input.value = '';
+        }
+
+        function appendChatMessage(sender, text, avatarUrl, isReaction = false) {
+            const container = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex items-start gap-2.5 animate-fadeIn";
+
+            const avatar = avatarUrl || "https://placehold.co/100x100/F8C8DC/800020?text=U";
+            
+            msgDiv.innerHTML = `
+                <img src="${avatar}" alt="Avatar" class="w-7 h-7 rounded-full object-cover flex-shrink-0 border border-pastel-burgundy/30 mt-0.5">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-slate-700 dark:text-slate-200 text-xs">${escapeHtml(sender)}</span>
+                        <span class="text-[10px] text-slate-400">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-300 break-words mt-0.5 ${isReaction ? 'italic text-pastel-burgundy dark:text-pastel-pink' : ''}">${escapeHtml(text)}</p>
+                </div>
+            `;
+
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendSystemMessage(text) {
+            const container = document.getElementById('chatMessages');
+            const sysDiv = document.createElement('div');
+            sysDiv.className = "text-center my-1.5";
+            sysDiv.innerHTML = `<span class="px-3 py-1 rounded-full bg-pastel-burgundy/10 text-pastel-burgundy dark:text-pastel-pink text-[10px] font-medium">${escapeHtml(text)}</span>`;
+            container.appendChild(sysDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function simulateRandomChatter() {
+            const peers = [
+                { name: "Rarity", avatar: "https://placehold.co/100x100/DDA0DD/FFFFFF?text=R" },
+                { name: "Pinkie Pie", avatar: "https://placehold.co/100x100/FF69B4/FFFFFF?text=PP" },
+                { name: "Rainbow Dash", avatar: "https://placehold.co/100x100/00BFFF/FFFFFF?text=RD" }
+            ];
+            const comments = [
+                "This part is so good! 💖",
+                "Popcorn is ready! 🍿",
+                "Omg look at that animation ✨",
+                "Best watch party ever!"
+            ];
+            const randomPeer = peers[Math.floor(Math.random() * peers.length)];
+            const randomComment = comments[Math.floor(Math.random() * comments.length)];
+            
+            appendChatMessage(randomPeer.name, randomComment, randomPeer.avatar);
+            
+            const emojis = ['✨', '💖', '🍿', '🦄'];
+            triggerFloatingEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
